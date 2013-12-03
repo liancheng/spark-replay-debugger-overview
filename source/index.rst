@@ -47,11 +47,16 @@ Features already implemented in SRD includes:
 
 #.  RDD lineage DAG visualization (with source location information)
 
-    RDD lineage DAG visualization is based on GraphViz.  All output formats supported by GraphViz are also supported.
+    RDD lineage DAG visualization is based on GraphViz.  All output formats supported by GraphViz are also supported.  Here is a sample visualization of the MLlib ALS application (with 1 iteration):
+
+    .. figure:: als-rdd-lineage.png
+        :scale: 50%
+
+        MLlib ALS RDD lineage DAG (1 iteration)
 
 #.  Debugging assertions
 
-    Debugging assertions can be considered as additional invariant checking closures attached to given RDDs.  Users can attach them to RDDs reconstructed from the event log or use them directly within their Spark applications.  When RDDs with assertions are computed, ``AssertionError`` exceptions would be thrown if the assertions fail.
+    Debugging assertions can be considered as additional invariant checking closures attached to given RDDs.  Users can attach them to RDDs reconstructed from the event log or use them directly within their Spark applications.  When RDDs with assertions are computed, ``AssertionError``\s would be thrown if the assertions fail.
 
     Currently SRD provides two types of debugging assertions:
 
@@ -87,7 +92,7 @@ You may checkout the ``replay-debugger`` branch from GitHub::
 
 Or add a new remote to your existing local repository::
 
-    $ git remote add liancheng
+    $ git remote add liancheng https://github.com/liancheng/incubator-spark.git
     $ git fetch liancheng
     $ git checkout replay-debugger
 
@@ -110,10 +115,14 @@ To enable SRD, you must first define these two properties by, for example, appen
     export SPARK_JAVA_OPTS+=" -Dspark.eventLogging.enabled=true"
     export SPARK_JAVA_OPTS+=" -Dspark.eventLogging.eventLogPath=/tmp/replay.log"
 
+.. note::
+
+    To use the visualization feature, the GraphViz ``dot`` program is also required.
+
 Using SRD in the Spark REPL shell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Start the Spark shell and try the sample session:
+Start the Spark shell and try the sample dialog below: 
 
 .. parsed-literal::
 
@@ -274,7 +283,7 @@ Currently, ``EventLogger`` listens to the following events:
 ``EventReplayer``
 ~~~~~~~~~~~~~~~~~
 
-``EventReplayer`` is main user interface exposed by SRD.  RDD lineage DAG reconstruction, visualization, debugging assertion and all other features provided by SRD are implemented here.
+``EventReplayer`` is the main user interface exposed by SRD.  RDD lineage DAG reconstruction, visualization, debugging assertion and all other features (to be) provided by SRD are implemented here.
 
 When an ``EventReplayer`` is created, it reads persisted events from the event log, and registers itself to the ``EventLogger``, so that it can get updated when new events are captured.
 
@@ -301,11 +310,11 @@ This approach has two major drawbacks:
 #.  It's *intrusive*, every concrete RDD classes must be modified to emit the RDD creation event. And...
 #.  More importantly, *concrete RDD classes can never be inherited again*.
 
-    Otherwise, there would be two ``reportCreation()`` calls, one issued from the base class constructor, and another from the derived class constructor.  Notice that we can't simply put a ``reportCreation()`` call at the end of the constructor of the abstract ``RDD`` class, because at that point, the concrete RDD instance is not fully constructed yet, thus the serialized RDD objected may also be incomplete.
+    Otherwise, there would be two ``reportCreation()`` calls, one issued from the base class constructor, and another from the derived class constructor.  Notice that we can't simply put a ``reportCreation()`` call at the end of the constructor of the abstract ``RDD`` class, because at that point, the concrete RDD instance is not fully constructed yet, thus the serialized RDD object may also be incomplete.
 
-Instead, SRD collects RDDs from the ``ActiveJob`` object comes with the ``SparkListenerJobStart`` event emitted when a job is submitted (please refer to the ``collectJobRDDs()`` method of ``EventReplayer``).  RDD lineage DAGs are reconstructed in a stage by stage manner.  Notice that we can't reconstruct the whole DAG with only the final RDD of the final stage.  It is because parent RDDs pointed by ``ShuffleDependency`` instances are not serialized (``ShuffleDependency.rdd`` is annotated as ``@transient``).
+Instead, SRD collects RDDs from the ``ActiveJob`` object comes with the ``SparkListenerJobStart`` event emitted when a job is submitted (please refer to the ``collectJobRDDs()`` method in ``EventReplayer``).  RDD lineage DAGs are reconstructed in a stage by stage manner.  Notice that we can't reconstruct the whole DAG with only the final RDD of the final stage.  It is because parent RDDs pointed by ``ShuffleDependency`` instances are not serialized (``ShuffleDependency.rdd`` is annotated as ``@transient``).
 
-In contrast of Arthur, SRD will collect RDDs until a job is actually submitted.  Since generally RDDs are created to be run in some jobs, this compromise makes sense.
+In contrast of Arthur, SRD won't collect RDDs until a job is actually submitted.  Since generally RDDs are created to be run in some jobs, this compromise makes sense.
 
 Debugging assertions
 ~~~~~~~~~~~~~~~~~~~~
