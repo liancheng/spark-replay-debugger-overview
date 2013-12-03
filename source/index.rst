@@ -1,8 +1,14 @@
 Spark Replay Debugger Overview
 ==============================
 
-:Author: Cheng Lian <rhythm.mail@gmail.com>
-:Date: 2013/12/01
+:Author: Cheng Lian <rhythm.mail@gmail.com>, Intel Labs China
+:Date: 2013/12/03
+:Git branch: https://github.com/liancheng/incubator-spark/tree/replay-debugger
+:JIRA issue: `SPARK-975`__
+:Pull Request: `PR-224`__
+
+__ https://spark-project.atlassian.net/browse/SPARK-975
+__ https://github.com/apache/incubator-spark/pull/224
 
 .. contents::
 
@@ -413,10 +419,10 @@ Naturally, SRD suffers the same problem::
 
 Thus, except for some trivial applications, it is suggested to run and debug the job with SRD within the same REPL session, or use SRD directly in your applications.
 
-One possible solution to this problem is that, instead of persisting all key events emitted, we may choose to serilize the RDD lineage DAG only.  As long as the input data remains, the job can always be replayed.
+One possible solution to this problem is that, instead of persisting all key events emitted, we may choose to serialize the RDD lineage DAG only.  As long as the input data remains, the job can always be replayed.
 
-Future works
-------------
+Future work
+-----------
 
 *   Checksum based transformation nondeterminism detection
 *   Single task debugging with conventional debugger
