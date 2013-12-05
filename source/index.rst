@@ -88,7 +88,7 @@ Usage
 You may checkout the ``replay-debugger`` branch from GitHub::
 
     $ ssh clone git@github.com:liancheng/incubator-spark.git
-    $ git checkout replay-debugger git@github.com:liancheng/incubator-spark.git
+    $ git checkout replay-debugger
 
 Or add a new remote to your existing local repository::
 
