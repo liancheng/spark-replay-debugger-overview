@@ -45,14 +45,17 @@ Features
 
 Features already implemented in SRD includes:
 
-#.  RDD lineage DAG visualization (with source location information)
+#.  RDD lineage DAG visualization (with source location and pipelining information)
 
     RDD lineage DAG visualization is based on GraphViz.  All output formats supported by GraphViz are also supported.  Here is a sample visualization of the MLlib ALS application (with 1 iteration):
 
-    .. figure:: als-rdd-lineage.png
-        :scale: 50%
+    .. figure:: als-1-small.png
+        :target: _static/als-1-large.png
+        :align: center
 
-        MLlib ALS RDD lineage DAG (1 iteration)
+        MLlib ALS RDD lineage DAG (1 iteration).  RDDs are represented as small boxes, stages are represented as large rectangles, and shuffle dependencies are represented as red arrows.  `Click here`__ for the high resolution version.
+
+    __ _static/als-1-large.png
 
 #.  Debugging assertions
 
